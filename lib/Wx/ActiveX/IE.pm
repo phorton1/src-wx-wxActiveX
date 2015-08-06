@@ -45,6 +45,8 @@ our @activexevents = qw (
     OnTheaterMode
     OnToolBar
     OnVisible
+    PrintTemplateInstantiation
+    PrintTemplateTeardown
     ProgressChange
     PropertyChange
     SetSecureLockIcon
