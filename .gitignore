@@ -1,0 +1,14 @@
+blib/*
+cpp/*
+
+ActiveX.bs
+ActiveX.c
+ActiveX.def
+ActiveX.o
+Makefile
+
+dll.base
+dll.exp
+overload.lst
+pm_to_blib
+wxt_overload
