@@ -412,12 +412,32 @@ sub ParamSet {
     
     my $pt = $evt->ParamType($idx) ;
     
+    # print "        prh ParamSet($pt,$val)\n";
+    
     if ($pt eq 'bool') {
         $evt->ParamSetBool($idx , $val) ;
     }
     elsif ($pt eq 'long'||$pt eq 'int') {
         $evt->ParamSetInt($idx , $val) ;
     }
+    
+    # prh - added ParamSetActiveX() method to wxactive.cpp and h
+    #
+    # This fixed EVT_ACTIVEX_IE_NEWWINDOW2 to allow us to pass a
+    # ppDisp ActiveX::IE (MyMS::IE) to become the parent of, and
+    # to give us control of the new window. 
+    #
+    # Probably could actually up-map the type from the XS to
+    # an actual wxWidget*, and it is probably wrong to be using
+    # void* here, but it works cuz it's just an arbitrary string
+    # in this case.
+    
+    elsif ($pt eq 'void*')
+    {
+        $evt->ParamSetActiveX($idx , $val) ;
+    }
+
+    
     else {
         $evt->ParamSetString($idx , $val) ;
     }
@@ -432,18 +452,24 @@ sub ActiveXEventSub {
             
             $evt = Wx::ActiveX::XS_convert_isa($evt,"Wx::ActiveXEvent") ;
             
+            # print "prh_debug Params before call\n";
+            
             for(0..($evt->ParamCount)-1) {
                 my $pn = $evt->ParamName($_);
                 my $pv = $evt->ParamVal($_);
+                # print "    prh $pn=$pv\n";
                 $evt->{$pn} = $pv ;
                 $evt->{ParamID}{$pn} = $_ ;
             }
             
             my @ret = &$sub( $_[0] , $evt ) ;
             
+            # print "prh_debug Params AFTER call\n";
+            
             for(0..($evt->ParamCount)-1) {
                 my $pn = $evt->ParamName($_);
                 my $pv = $evt->ParamVal($_);
+                # print "    prh $pn=$pv\n";
                 if ($pv ne $evt->{$pn}) { $evt->ParamSet($_, $evt->{$pn} ) ;}
             }    
             

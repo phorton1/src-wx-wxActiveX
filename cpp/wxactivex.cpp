@@ -1091,6 +1091,48 @@ void wxActiveXEvent::ParamSetString(int idx , wxString val)
     m_params[idx] = val ;
 };
 
+
+
+void wxActiveXEvent::ParamSetActiveX(int idx , wxActiveX *val)
+	// 2017-12-30  Added ParamSetActiveX() to fix EVT_ACTIVEX_IE_NEWWINDOW2
+	//
+	// While writing MyMS::IEScriptedWindow, I needed to “capture” the popup window from
+	// Banistmo for login. According to online documentation, you are supposed
+	// to be able to set the $event->{ppDisp) to a “WebBrowserControl” that will
+	// become the handler for the new window (instead of defaulting to a popup
+	// standalone IE).   When I tried, it crashed.  Other people had the error
+	// but there were no posted solutions.
+	//
+	// So I figured out to change the following:
+	// 
+	// /lib/Wx/ActiveX.pm – add call to  ParamSetActiveX() for ‘void*’ type
+	// /XS/ActiveX.xs – added ParamSetActiveX signature
+	// Cpp/wxactivex.h – added ParamSetActiveX() declaration
+	// Cpp/wxactivex.cpp – added ParamSetActiveX() method
+	// 
+	// YOU MAKE THESE CHANGES IN src/Wx/ActiveX, and then do dmake install
+	//    get them into C:\perl !!!  (dont just modify the Perl/ActiveX.pm!!
+	//    as it gets overwritten by the src/Wx/ActiveX build !! )
+	//
+	// YOU MAY NEED TO DO perl makefile.pl for a CLEAN BUILD !!
+	//
+	// This fixed EVT_ACTIVEX_IE_NEWWINDOW2 to allow us to pass a
+	// ppDisp ActiveX::IE (MyMS::IE) to become the parent of, and
+	// to give us control of the new window.
+{
+    // printf("----> prhParamSet !!! \n");
+    
+    wxASSERT(idx >= 0 && idx < m_params.GetCount());
+    
+    // NOTE THAT I JUST HAPPNENED UPON THE IDEA TO PAS THE "DISPATCH"
+    // OBJECT, in this manner, from a "wxActiveX*" object, and it worked!
+    //
+    // Also note the overloading of "void*" in ActiveX.pm
+    
+    m_params[idx] = val->GetOLEDispatch() ;
+};
+
+
 static wxVariant nullVar;
 
 wxVariant& wxActiveXEvent::operator[] (int idx)

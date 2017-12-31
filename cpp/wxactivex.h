@@ -626,6 +626,9 @@ public:
     void ParamSetBool(int idx , bool val);
     void ParamSetInt(int idx , long val);
     void ParamSetString(int idx , wxString val);
+	
+	// prh addition
+	void ParamSetActiveX(int idx , wxActiveX *val);
 
     wxVariant& operator[] (int idx);
     wxVariant& operator[] (wxString name);

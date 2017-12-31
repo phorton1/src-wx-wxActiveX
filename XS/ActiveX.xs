@@ -326,6 +326,19 @@ wxActiveXEvent::ParamSetString(idx , val)
     int idx
     wxString val
 
+
+ # XS comments begin with " #" to avoid them being interpreted as pre-processor
+ # prh - added ParamSetActiveX
+
+void
+wxActiveXEvent::ParamSetActiveX(idx, val)
+    int idx
+    wxActiveX* val
+
+
+
+
+
 wxEventType
 RegisterActiveXEvent( eventName )
     wxChar* eventName
